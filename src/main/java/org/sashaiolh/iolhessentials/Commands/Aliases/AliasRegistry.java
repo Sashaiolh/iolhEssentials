@@ -5,6 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -55,7 +56,6 @@ public class AliasRegistry {
                 break;
             }
         }
-
         //append remaining nodes
         StringBuilder args = new StringBuilder();
         for (String node : nodes) {
@@ -66,30 +66,16 @@ public class AliasRegistry {
 
     public static void registerAliases(CommandDispatcher<CommandSourceStack> dispatcher) {
         readAliases();
-        for (String x : aliases.keySet()) {
-            List<String> nodes = StringUtils.split(x, ' ');
-            List<LiteralArgumentBuilder<CommandSourceStack>> literals = new ArrayList<>();
-            for (int i = 0; i < nodes.size(); i++) {
-                if (i == 0) {
-                    literals.add(LiteralArgumentBuilder.literal(nodes.get(i)));
-                } else {
-                    literals.add(Commands.literal(nodes.get(i)));
-                }
+        aliases.forEach((key, value) -> {
+            try {
+                dispatcher.register(
+                        Commands.literal(key)
+                                .redirect(dispatcher.findNode(Arrays.asList(value.split("\\s+"))))
+                );
+            } catch (Exception e) {
+                System.out.println("Error registering aliases: " + e.getMessage());
             }
-
-            LiteralArgumentBuilder<CommandSourceStack> literal = null;
-            if (literals.size() == 1) {
-                literal = literals.get(0).executes(AliasRegistry::runAlias).then(Commands.argument("args", StringArgumentType.greedyString()).executes(AliasRegistry::runAlias));
-            } else {
-                for (int i = literals.size() - 1; i > 0; i--) {
-                    if (i == literals.size() - 1) {
-                        literals.get(i).executes(AliasRegistry::runAlias).then(Commands.argument("args", StringArgumentType.greedyString()).executes(AliasRegistry::runAlias));
-                    }
-                    literal = literals.get(i - 1).then(literals.get(i));
-                }
-            }
-            dispatcher.register(literal);
-        }
+        });
     }
 
 
@@ -97,7 +83,6 @@ public class AliasRegistry {
         aliases.put(name, cmd);
         writeAliases();
     }
-
     private static void writeAliases() {
         if (file.exists()) {
             file.delete();
@@ -128,8 +113,8 @@ public class AliasRegistry {
 
         }
         aliases.clear();
-        for (String x : lines) {
-            List<String> strings = StringUtils.split(x, '|');
+        for (String line : lines) {
+            List<String> strings = StringUtils.split(line, '|');
             for (int i = 0; i < strings.size(); i++) {
                 strings.set(i, strings.get(i).trim());
             }
