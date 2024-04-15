@@ -6,7 +6,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
@@ -68,9 +70,11 @@ public class AliasRegistry {
         readAliases();
         aliases.forEach((key, value) -> {
             try {
+                CommandNode<CommandSourceStack> command = dispatcher.findNode(Arrays.asList(value.split("\\s+")));
                 dispatcher.register(
                         Commands.literal(key)
-                                .redirect(dispatcher.findNode(Arrays.asList(value.split("\\s+"))))
+                                .requires(command.getRequirement())
+                                    .redirect(command)
                 );
             } catch (Exception e) {
                 System.out.println("Error registering aliases: " + e.getMessage());
