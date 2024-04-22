@@ -35,7 +35,7 @@ public class HelpopCommand {
                                     String message = StringArgumentType.getString(context, "message");
 
                                 luckPerms = LuckPermsProvider.get();
-                                MinecraftServer server = ServerLifecycleHooks.getCurrentServer();                                // Здесь вызываем метод, который выведет список игроков с заданным разрешением
+                                MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
                                 List<ServerPlayer> playersWithPermission = PermissionUtils.getPlayersWithPermission(luckPerms, server, "command.helpop");
                                 for (ServerPlayer player : playersWithPermission) {
                                     LocalTime timeNow = LocalTime.now();
@@ -48,17 +48,13 @@ public class HelpopCommand {
                                     final String[] nicknameColorCode = {""};
                                     nicknameColorCode[0] = IolhEssentials.helpopPexConfigManager.getConfig("defaultColor");
 
-                                    System.out.println("=== All Config ===");
                                     int totalChecks = IolhEssentials.helpopPexConfigManager.getAllKeys().size();
                                     AtomicInteger finishedChecks = new AtomicInteger(0);
 
                                     for (String key : IolhEssentials.helpopPexConfigManager.getAllKeys()) {
                                         PermissionUtils.isUser(player.getUUID(), key, isUser -> {
                                             if (isUser) {
-                                                System.out.println("123");
                                                 nicknameColorCode[0] = IolhEssentials.helpopPexConfigManager.getConfig(key);
-                                                System.out.println(IolhEssentials.helpopPexConfigManager.getConfig(key));
-                                                System.out.println(nicknameColorCode[0]);
                                             }
                                             // Увеличиваем счетчик завершенных проверок
                                             if (finishedChecks.incrementAndGet() == totalChecks) {

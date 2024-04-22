@@ -57,6 +57,7 @@ public class ConfigManager {
     private static void createDefaultConfig() {
         // Установка шаблонных значений конфигурации
         properties.setProperty("helpopPrefix", "§8[§4Мод-чат§8]");
+        properties.setProperty("socialspyPrefix", "§8[§6SocialSpy§8]");
 //        properties.setProperty("time", "20");
         saveConfig(); // Сохраняем шаблонную конфигурацию в файл
     }

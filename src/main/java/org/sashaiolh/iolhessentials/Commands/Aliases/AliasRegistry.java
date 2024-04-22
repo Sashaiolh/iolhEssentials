@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import org.sashaiolh.iolhessentials.IolhEssentials;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +21,7 @@ import java.util.*;
 
 public class AliasRegistry {
     private static final Map<String, String> aliases = new HashMap<>();
-    private static final File file = new File("config/commandaliases.txt");
+    private static final File file = new File("config/"+ IolhEssentials.MODID +" /aliases.txt");
 
     public static int runAlias(CommandContext<CommandSourceStack> context) {
         String input = context.getInput();
