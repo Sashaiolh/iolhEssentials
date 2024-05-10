@@ -115,7 +115,6 @@ public class AliasRegistry {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
         aliases.clear();
         for (String line : lines) {
